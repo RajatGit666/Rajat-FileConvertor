@@ -3,14 +3,13 @@ import subprocess
 from flask import Flask, render_template, request, send_file
 from pdf2docx import parse
 
-app = Flask(__name__)
+# Docker container ke andar files /app folder mein hoti hain
+app = Flask(__name__, template_folder='/app/templates') 
 UPLOAD_FOLDER = '/tmp'
 
-def Word_to_Pdf(word_path):
-    pdf_out = word_path.replace(".docx", ".pdf")
-    # LibreOffice command ka istemal (Direct conversion)
-    subprocess.run(['soffice', '--headless', '--convert-to', 'pdf', '--outdir', UPLOAD_FOLDER, word_path])
-    return pdf_out
+@app.route('/')
+def home():
+    return render_template("index.html")
 
 @app.route('/convert', methods=['POST'])
 def Receive_file():
@@ -18,9 +17,10 @@ def Receive_file():
     saved_path = os.path.join(UPLOAD_FOLDER, user_file.filename)
     user_file.save(saved_path)
     
-    if saved_path.endswith('.pdf'):
-        out = saved_path.replace(".pdf", ".docx")
-        parse(saved_path, out)
-    else:
-        out = Word_to_Pdf(saved_path)
-    return send_file(out, as_attachment=True)
+    # PDF to Word conversion (using pdf2docx)
+    out_file = saved_path.replace(".pdf", ".docx")
+    parse(saved_path, out_file)
+    return send_file(out_file, as_attachment=True)
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
