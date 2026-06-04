@@ -1,34 +1,41 @@
 import os
 from flask import Flask, render_template, request, send_file
-from pdf2docx import parse
+import cloudconvert
 
-app = Flask(__name__, template_folder='templates')
-# Hum `/tmp` ka use karenge kyunki wahi allowed hai
-UPLOAD_FOLDER = '/tmp'
+app = Flask(__name__)
+# Yahan apni CloudConvert API Key daalo (Free mein mil jati hai)
+cloudconvert.configure(api_key='YOUR_API_KEY_HERE')
 
 @app.route('/')
 def home():
     return render_template("index.html")
 
 @app.route('/convert', methods=['POST'])
-def Receive_file():
-    if 'user_file' not in request.files:
-        return "No file part", 400
-        
-    user_file = request.files['user_file']
-    # File ko tmp folder mein save karo
-    saved_path = os.path.join(UPLOAD_FOLDER, user_file.filename)
-    user_file.save(saved_path)
+def convert_file():
+    file = request.files['user_file']
+    # File upload karo
+    upload = cloudconvert.Uploads.upload(file.stream, filename=file.filename)
     
-    # Output file ka path bhi tmp folder mein rakho
-    out_file = os.path.join(UPLOAD_FOLDER, user_file.filename.replace(".pdf", ".docx"))
+    # Job create karo
+    job = cloudconvert.Jobs.create(payload={
+        "tasks": {
+            "import-file": {
+                "operation": "import/upload"
+            },
+            "convert-file": {
+                "operation": "convert",
+                "input": "import-file",
+                "output_format": request.form.get('target_format') # User select karega
+            },
+            "export-file": {
+                "operation": "export/url",
+                "input": "convert-file"
+            }
+        }
+    })
     
-    try:
-        # Conversion
-        parse(saved_path, out_file)
-        return send_file(out_file, as_attachment=True)
-    except Exception as e:
-        return f"Conversion Error: {str(e)}"
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000)
+    # Wait and Download
+    job = cloudconvert.Jobs.wait(id=job.id)
+    file_url = cloudconvert.Tasks.export(id=job.tasks[2].id).url
+    
+    return f'<a href="{file_url}">Download Converted File</a>'
