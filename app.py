@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from pdf2docx import parse
 
 # Direct initialization - koi variable nahi
-convertapi.api_secret = 'Ttd9o7vIAQiv48mKR4KUIF2R16uPDuebm'
+convertapi.api_secret = 'TtD9o7vIAQv48mKR4KUIF2Rl6uPDuebm'
 
 app = Flask(__name__, template_folder="templates")
 UPLOAD_FOLDER = '/tmp'
