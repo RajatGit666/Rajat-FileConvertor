@@ -9,7 +9,7 @@ app = Flask(__name__, template_folder="templates")
 UPLOAD_FOLDER = '/tmp'
 
 # 👉 YAHAN APNA ASLI API SECRET DAALNA HAI
-convertapi.api_secret = 'TtD9o7vIAQv48mKR4KUIF2Rl6uPDuebm'
+convertapi.api_secret = os.getenv('convertapi_secret')
 
 def Pdf_to_Word(pdf_path):
     word_out = pdf_path.replace(".pdf", ".docx")
