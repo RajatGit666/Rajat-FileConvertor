@@ -4,19 +4,13 @@ from flask import Flask, render_template, request, redirect, url_for, send_file
 from pdf2docx import parse
 import convertapi
 
+convertapi.api_secret = 'TtD9o7vIAQv48mKR4KUIF2Rl6uPDuebm'
+
 app = Flask(__name__, template_folder="templates")
 
 # Linux server ke liye secure temporary folder
 UPLOAD_FOLDER = '/tmp'
 
-# Render se environment variable uthao
-api_key = os.getenv('convertapi_secret')
-
-# Agar key nahi mili toh error dikhao, warna initialize karo
-if not api_key:
-    raise ValueError("API Key nahi mili! Render Dashboard check karo.")
-
-convertapi.api_secret = api_key
 
 def Pdf_to_Word(pdf_path):
     word_out = pdf_path.replace(".pdf", ".docx")
