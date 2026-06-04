@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My First Flask App</title>
+</head>
+<body style="background-color: #f8f9fa;">
+    <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 100vh;">
+      
+        <div class="card shadow-lg p-5 text-center" style="border-radius: 15px; width: 100%; max-width: 450px; border: none;">
+            
+            <h2 class="fw-bold text-dark mb-2">🔄 File Converter</h2>
+            <p class="text-muted small mb-4">We will convert your file (Word <-> PDF)</p>
+
+            <form action="/convert" method="POST" enctype="multipart/form-data">
+                <input class="form-control mb-3" type="file" name="user_file" required>
+                <button class="btn btn-dark w-100 fw-bold" type="submit">🚀 Upload & Convert</button>
+            </form>
+
+            {% if file_to_download %}
+                <div class="mt-4 p-3" style="background-color: #e8f5e9; border-radius: 10px;">
+                    <h6 class="text-success fw-bold mb-3">🎉 Success! File Convert Ho Gayi</h6>
+                    <a href="/download/{{ file_to_download }}" class="btn btn-success w-100 fw-bold">
+                        📥 Nayi File Download Karo
+                    </a>
+                </div>
+            {% endif %}
+            
+        </div>
+    </div> </body>
+</html>
